@@ -8,7 +8,7 @@ import cv2
 import dlib
 import h5py
 import glob
-import sys
+import rawpy
 
 from keras.datasets import mnist
 
@@ -92,17 +92,17 @@ class Sony_SITD(SITD):
 			short_path , long_path , ISO , F_score = line.split(' ')
 			class_id = short_path.split('/')[-1].split('_')[0]
 
-			img_paths.append(short_path)
+			img_paths.append(os.path.join(self._base_dir,short_path))
 			class_ids.append(class_id)
 			contant_ids.append(0)
 
 		for line in lines:
 			short_path , long_path , ISO , F_score = line.split(' ')
-			if long_path == img_paths[-1]:
+			if os.path.join(self._base_dir,long_path) == img_paths[-1]:
 				continue
 			class_id = short_path.split('/')[-1].split('_')[0]
 
-			img_paths.append(long_path)
+			img_paths.append(os.path.join(self._base_dir,long_path))
 			class_ids.append(class_id)
 			contant_ids.append(1)
 
@@ -119,7 +119,7 @@ class Sony_SITD(SITD):
 		contents = np.empty(shape=(len(img_paths), ), dtype=np.uint32)
 
 		for i in range(len(img_paths)):
-			img = imageio.imread(img_paths[i])
+			img = rawpy.imread(img_paths[i])
 
 			imgs[i] = img
 			classes[i] = unique_class_ids.index(class_ids[i])
